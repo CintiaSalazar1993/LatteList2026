@@ -1,4 +1,4 @@
-package com.example.LatteList.Enums;
+package com.example.LatteList.Modelo.Enum;
 
 public enum CostoPromedio {
     $,
