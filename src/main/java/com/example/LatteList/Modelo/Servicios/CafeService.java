@@ -42,9 +42,9 @@ public class CafeService {
         this.resenaRepository = resenaRepository;
     }
 
-    /** RF5 y RF6: todos los cafes, con filtros opcionales por nombre, costo y etiquetas (deben tenerlas todas). */
+    /** RF5, RF6 y RF7: cafes con filtros opcionales por nombre, costo y etiquetas, ordenables por nombre, puntuacion o costo. */
     @Transactional(readOnly = true)
-    public List<CafeResponseDTO> listar(String nombre, CostoPromedio costo, List<Etiquetas> etiquetas) {
+    public List<CafeResponseDTO> listar(String nombre, CostoPromedio costo, List<Etiquetas> etiquetas, String orden) {
         Specification<Cafe> spec = (root, query, cb) -> {
             List<Predicate> filtros = new ArrayList<>();
             if (nombre != null && !nombre.isBlank()) {
@@ -60,7 +60,16 @@ public class CafeService {
             }
             return cb.and(filtros.toArray(new Predicate[0]));
         };
-        return cafeRepository.findAll(spec, Sort.by("nombre")).stream().map(this::aDTO).toList();
+        List<CafeResponseDTO> lista = new ArrayList<>(
+                cafeRepository.findAll(spec, Sort.by("nombre")).stream().map(this::aDTO).toList());
+        // La lista ya viene ordenada por nombre; el sort de Java es estable, asi que el nombre desempata.
+        if ("puntuacion".equals(orden)) {
+            lista.sort(java.util.Comparator.comparing(
+                    (CafeResponseDTO c) -> c.puntuacionPromedio() == null ? 0.0 : c.puntuacionPromedio()).reversed());
+        } else if ("costo".equals(orden)) {
+            lista.sort(java.util.Comparator.comparing((CafeResponseDTO c) -> c.costoPromedio().ordinal()));
+        }
+        return lista;
     }
 
     /** RF4: ficha de un cafe. */

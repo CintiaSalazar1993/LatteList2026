@@ -1,10 +1,11 @@
 package com.example.LatteList.Controlador;
 
 import com.example.LatteList.Modelo.Servicios.ResenaService;
+import com.example.LatteList.security.SecurityUtils;
 import com.example.LatteList.Vista.ResenaDTOs.ResenaDetailDTO;
 import com.example.LatteList.Vista.ResenaDTOs.ResenaListDTO;
 import com.example.LatteList.Vista.ResenaDTOs.ResenaRequestDTO;
-import com.example.LatteList.security.SecurityUtils;
+
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/** RF8, RF9, RF11 y RF22. */
+/** RF8, RF9, RF11, RF22, RF23, RF26 y RF27. */
 @RestController
 @RequestMapping("/api")
 public class ResenaController {
@@ -43,6 +44,27 @@ public class ResenaController {
         return resenaService.misResenas(SecurityUtils.usuarioActual().getId());
     }
 
+    @GetMapping("/resenas/recibidas")
+    @PreAuthorize("hasRole('DUENIO')")
+    public List<ResenaListDTO> recibidas() {
+        return resenaService.recibidas(SecurityUtils.usuarioActual().getId());
+    }
+
+    @GetMapping("/resenas")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<ResenaListDTO> buscar(@RequestParam(required = false) Long cafeId,
+                                      @RequestParam(required = false) Integer puntajeMin,
+                                      @RequestParam(required = false) Integer puntajeMax) {
+        return resenaService.buscar(cafeId, puntajeMin, puntajeMax);
+    }
+
+    @PutMapping("/resenas/{id}")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResenaDetailDTO actualizar(@PathVariable Long id,
+                                      @Valid @RequestBody ResenaRequestDTO dto) {
+        return resenaService.actualizar(id, dto, SecurityUtils.usuarioActual());
+    }
+
     @GetMapping("/resenas/{id}")
     public ResenaDetailDTO obtener(@PathVariable Long id) {
         return resenaService.obtener(id);
@@ -55,4 +77,3 @@ public class ResenaController {
         return ResponseEntity.noContent().build();
     }
 }
-

@@ -14,6 +14,18 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
 
     List<Resena> findByUsuarioIdOrderByFechaDescIdDesc(Long usuarioId);
 
+    /** RF26: reseñas de todos los cafés de un dueño. */
+    List<Resena> findByCafeDuenioIdOrderByFechaDescIdDesc(Long duenioId);
+
+    /** RF27: búsqueda del ADMIN; cada filtro es opcional (null = no filtra). */
+    @Query("select r from Resena r where (:cafeId is null or r.cafe.id = :cafeId) "
+            + "and (:min is null or r.puntuacionGeneral >= :min) "
+            + "and (:max is null or r.puntuacionGeneral <= :max) "
+            + "order by r.fecha desc, r.id desc")
+    List<Resena> buscar(@Param("cafeId") Long cafeId,
+                        @Param("min") Integer min,
+                        @Param("max") Integer max);
+
     long countByCafeId(Long cafeId);
 
     @Query("select avg(r.puntuacionGeneral) from Resena r where r.cafe.id = :cafeId")

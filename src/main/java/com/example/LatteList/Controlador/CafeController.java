@@ -29,8 +29,9 @@ public class CafeController {
     @GetMapping
     public List<CafeResponseDTO> listar(@RequestParam(required = false) String nombre,
                                         @RequestParam(required = false) CostoPromedio costo,
-                                        @RequestParam(required = false) List<Etiquetas> etiquetas) {
-        return cafeService.listar(nombre, costo, etiquetas);
+                                        @RequestParam(required = false) List<Etiquetas> etiquetas,
+                                        @RequestParam(required = false) String orden) {
+        return cafeService.listar(nombre, costo, etiquetas, orden);
     }
 
     @GetMapping("/aleatorio")

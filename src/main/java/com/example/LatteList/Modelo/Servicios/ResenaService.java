@@ -71,6 +71,36 @@ public class ResenaService {
                 .toList();
     }
 
+    /** RF26: reseñas recibidas en los cafés del dueño autenticado. */
+    @Transactional(readOnly = true)
+    public List<ResenaListDTO> recibidas(Long duenioId) {
+        return resenaRepository.findByCafeDuenioIdOrderByFechaDescIdDesc(duenioId).stream()
+                .map(ResenaListDTO::from)
+                .toList();
+    }
+
+    /** RF27: el ADMIN ve todas las reseñas, filtrando por café y/o rango de puntaje general. */
+    @Transactional(readOnly = true)
+    public List<ResenaListDTO> buscar(Long cafeId, Integer puntajeMin, Integer puntajeMax) {
+        return resenaRepository.buscar(cafeId, puntajeMin, puntajeMax).stream()
+                .map(ResenaListDTO::from)
+                .toList();
+    }
+
+    /** RF23: solo el autor puede editar su reseña. */
+    @Transactional
+    public ResenaDetailDTO actualizar(Long id, ResenaRequestDTO dto, Usuario actor) {
+        Resena resena = buscar(id);
+        if (!resena.getUsuario().getId().equals(actor.getId())) {
+            throw new ForbiddenOperationException("Solo el autor puede editar su reseña");
+        }
+        resena.setPuntuacionGeneral(dto.puntuacionGeneral());
+        resena.setPuntuacionPrecio(dto.puntuacionPrecio());
+        resena.setPuntuacionAtencion(dto.puntuacionAtencion());
+        resena.setComentario(dto.comentario().trim());
+        return ResenaDetailDTO.from(resenaRepository.save(resena));
+    }
+
     @Transactional(readOnly = true)
     public ResenaDetailDTO obtener(Long id) {
         return ResenaDetailDTO.from(buscar(id));
