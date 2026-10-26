@@ -1,5 +1,6 @@
 package com.example.LatteList.Modelo.Servicios;
 
+import com.example.LatteList.Modelo.Excepciones.BadRequestException;
 import com.example.LatteList.Modelo.Entidades.ListaDeCafe;
 import com.example.LatteList.Modelo.Entidades.Usuario;
 import com.example.LatteList.Modelo.Enum.TipoDeUsuario;
@@ -107,10 +108,15 @@ public class UserService {
         return UsuarioResponseDTO.from(userRepository.save(usuario));
     }
 
-    /** Baja de usuario (propia o por ADMIN). Borra en cascada sus listas, resenas y cafes. */
+   /** Baja de usuario (propia o por ADMIN). Borra en cascada sus listas, resenas y cafes. */
     @Transactional
     public void eliminar(Long id) {
-        userRepository.delete(buscar(id));
+    Usuario usuario = buscar(id);
+        if (usuario.getTipoDeUsuario() == TipoDeUsuario.ADMIN
+            && userRepository.countByTipoDeUsuario(TipoDeUsuario.ADMIN) <= 1) {
+        throw new BadRequestException("No se puede eliminar al único administrador del sistema");
+    }
+        userRepository.delete(usuario);
     }
 
     private Usuario buscar(Long id) {

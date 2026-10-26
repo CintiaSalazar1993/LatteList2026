@@ -2,6 +2,7 @@ package com.example.LatteList.Modelo.Repositorios;
 
 import com.example.LatteList.Modelo.Entidades.Usuario;
 
+import com.example.LatteList.Modelo.Enum.TipoDeUsuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -12,4 +13,5 @@ public interface UserRepository extends JpaRepository<Usuario, Long>, JpaSpecifi
     Optional<Usuario> findByEmail(String email);
 
     boolean existsByEmail(String email);
+    long countByTipoDeUsuario(TipoDeUsuario tipoDeUsuario);
 }

@@ -28,6 +28,8 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
 
     long countByCafeId(Long cafeId);
 
+    boolean existsByUsuarioIdAndCafeId(Long usuarioId, Long cafeId);
+
     @Query("select avg(r.puntuacionGeneral) from Resena r where r.cafe.id = :cafeId")
     Double promedioGeneral(@Param("cafeId") Long cafeId);
 }
