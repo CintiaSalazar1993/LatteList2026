@@ -28,7 +28,7 @@ public enum Etiquetas {
         TERRAZA,
         PATIO,
         CALEFACCION,
-        AUIRE_ACONDICIONADO,
+        AIRE_ACONDICIONADO,
         ESTUDIANTES,
         GRUPOS_GRANDES,
         FAMILIAR,
