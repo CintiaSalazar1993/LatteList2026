@@ -30,4 +30,16 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
 
     @Query("select avg(r.puntuacionGeneral) from Resena r where r.cafe.id = :cafeId")
     Double promedioGeneral(@Param("cafeId") Long cafeId);
+
+    long countByCafeDuenioId(Long duenioId);
+
+    @Query("select avg(r.puntuacionGeneral) from Resena r")
+    Double promedioGlobal();
+
+    @Query("select avg(r.puntuacionGeneral) from Resena r where r.cafe.duenio.id = :duenioId")
+    Double promedioDeDuenio(@Param("duenioId") Long duenioId);
+
+    /** [cafeId, cantidad, promedio] de los cafés que tienen reseñas. */
+    @Query("select r.cafe.id, count(r), avg(r.puntuacionGeneral) from Resena r group by r.cafe.id")
+    List<Object[]> resumenPorCafe();
 }

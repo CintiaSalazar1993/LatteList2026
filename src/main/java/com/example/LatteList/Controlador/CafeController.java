@@ -3,6 +3,8 @@ package com.example.LatteList.Controlador;
 import com.example.LatteList.Modelo.Enum.CostoPromedio;
 import com.example.LatteList.Modelo.Enum.Etiquetas;
 import com.example.LatteList.Modelo.Servicios.CafeService;
+import com.example.LatteList.Modelo.Servicios.MetricasService;
+import com.example.LatteList.Vista.MetricasDTOs.MetricasDuenioDTO;
 import com.example.LatteList.security.SecurityUtils;
 import com.example.LatteList.Vista.CafeDTOs.CafeRequestDTO;
 import com.example.LatteList.Vista.CafeDTOs.CafeResponseDTO;
@@ -21,9 +23,11 @@ import java.util.List;
 public class CafeController {
 
     private final CafeService cafeService;
+    private final MetricasService metricasService;
 
-    public CafeController(CafeService cafeService) {
+    public CafeController(CafeService cafeService, MetricasService metricasService) {
         this.cafeService = cafeService;
+        this.metricasService = metricasService;
     }
 
     @GetMapping
@@ -68,5 +72,11 @@ public class CafeController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         cafeService.eliminar(id, SecurityUtils.usuarioActual());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/mis-cafes/metricas")
+    @PreAuthorize("hasRole('DUENIO')")
+    public MetricasDuenioDTO misMetricas() {
+        return metricasService.delDuenio(SecurityUtils.usuarioActual().getId());
     }
 }
