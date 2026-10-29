@@ -1,5 +1,6 @@
 package com.example.LatteList.Modelo.Servicios;
 
+import com.example.LatteList.Modelo.Excepciones.ConflictException;
 import com.example.LatteList.Modelo.Entidades.Cafe;
 import com.example.LatteList.Modelo.Entidades.Resena;
 import com.example.LatteList.Modelo.Entidades.Usuario;
@@ -38,6 +39,9 @@ public class ResenaService {
     public ResenaDetailDTO crear(Long cafeId, ResenaRequestDTO dto, Usuario actor) {
         Cafe cafe = cafeRepository.findById(cafeId)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el café con id " + cafeId));
+        if (resenaRepository.existsByUsuarioIdAndCafeId(actor.getId(), cafeId)) {
+            throw new ConflictException("Ya reseñaste este café. Podés editar tu reseña desde Mis reseñas.");
+        }
         Usuario usuario = userRepository.findById(actor.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el usuario autenticado"));
 
