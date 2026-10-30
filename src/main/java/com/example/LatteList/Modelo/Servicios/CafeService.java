@@ -45,23 +45,8 @@ public class CafeService {
     /** RF5, RF6 y RF7: cafes con filtros opcionales por nombre, costo y etiquetas, ordenables por nombre, puntuacion o costo. */
     @Transactional(readOnly = true)
     public List<CafeResponseDTO> listar(String nombre, CostoPromedio costo, List<Etiquetas> etiquetas, String orden) {
-        Specification<Cafe> spec = (root, query, cb) -> {
-            List<Predicate> filtros = new ArrayList<>();
-            if (nombre != null && !nombre.isBlank()) {
-                filtros.add(cb.like(cb.lower(root.<String>get("nombre")), "%" + nombre.trim().toLowerCase() + "%"));
-            }
-            if (costo != null) {
-                filtros.add(cb.equal(root.get("costoPromedio"), costo));
-            }
-            if (etiquetas != null) {
-                for (Etiquetas etiqueta : etiquetas) {
-                    filtros.add(cb.isMember(etiqueta, root.<Set<Etiquetas>>get("etiquetas")));
-                }
-            }
-            return cb.and(filtros.toArray(new Predicate[0]));
-        };
         List<CafeResponseDTO> lista = new ArrayList<>(
-                cafeRepository.findAll(spec, Sort.by("nombre")).stream().map(this::aDTO).toList());
+                cafeRepository.findAll(filtros(nombre, costo, etiquetas), Sort.by("nombre")).stream().map(this::aDTO).toList());
         // La lista ya viene ordenada por nombre; el sort de Java es estable, asi que el nombre desempata.
         if ("puntuacion".equals(orden)) {
             lista.sort(java.util.Comparator.comparing(
@@ -131,17 +116,36 @@ public class CafeService {
         cafeRepository.delete(cafe);
     }
 
-    /** RF24: sugiere un cafe al azar. */
+    /** RF24: sugiere un cafe al azar entre los que cumplen los filtros (todos opcionales). */
     @Transactional(readOnly = true)
-    public CafeResponseDTO aleatorio() {
-        List<Cafe> cafes = cafeRepository.findAll();
+    public CafeResponseDTO aleatorio(String nombre, CostoPromedio costo, List<Etiquetas> etiquetas) {
+        List<Cafe> cafes = cafeRepository.findAll(filtros(nombre, costo, etiquetas));
         if (cafes.isEmpty()) {
-            throw new ResourceNotFoundException("Todavía no hay cafés cargados");
+            throw new ResourceNotFoundException("No hay cafés que cumplan con esos filtros para sortear");
         }
         return aDTO(cafes.get(random.nextInt(cafes.size())));
     }
 
     // ---------- auxiliares ----------
+
+    /** Filtros opcionales por nombre, costo y etiquetas. Los usan el listado (RF6) y el café sorpresa (RF24). */
+    private Specification<Cafe> filtros(String nombre, CostoPromedio costo, List<Etiquetas> etiquetas) {
+        return (root, query, cb) -> {
+            List<Predicate> filtros = new ArrayList<>();
+            if (nombre != null && !nombre.isBlank()) {
+                filtros.add(cb.like(cb.lower(root.<String>get("nombre")), "%" + nombre.trim().toLowerCase() + "%"));
+            }
+            if (costo != null) {
+                filtros.add(cb.equal(root.get("costoPromedio"), costo));
+            }
+            if (etiquetas != null) {
+                for (Etiquetas etiqueta : etiquetas) {
+                    filtros.add(cb.isMember(etiqueta, root.<Set<Etiquetas>>get("etiquetas")));
+                }
+            }
+            return cb.and(filtros.toArray(new Predicate[0]));
+        };
+    }
 
     private Cafe buscar(Long id) {
         return cafeRepository.findById(id)

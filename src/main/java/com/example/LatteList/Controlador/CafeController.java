@@ -38,9 +38,12 @@ public class CafeController {
         return cafeService.listar(nombre, costo, etiquetas, orden);
     }
 
+    /** RF24: café al azar. Acepta los mismos filtros que el listado (todos opcionales). */
     @GetMapping("/aleatorio")
-    public CafeResponseDTO aleatorio() {
-        return cafeService.aleatorio();
+    public CafeResponseDTO aleatorio(@RequestParam(required = false) String nombre,
+                                     @RequestParam(required = false) CostoPromedio costo,
+                                     @RequestParam(required = false) List<Etiquetas> etiquetas) {
+        return cafeService.aleatorio(nombre, costo, etiquetas);
     }
 
     @GetMapping("/mis-cafes")
