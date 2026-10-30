@@ -96,15 +96,20 @@ public class UserService {
                 .toList();
     }
 
-    /** RF3: edicion del perfil propio. */
+    /** RF3: edicion del perfil propio. Para cambiar la contraseña se exige la actual. */
     @Transactional
     public UsuarioResponseDTO actualizarPerfil(Long id, UsuarioUpdateDTO dto) {
         Usuario usuario = buscar(id);
-        usuario.setNombre(dto.nombre().trim());
-        usuario.setApellido(dto.apellido().trim());
-        if (dto.contrasena() != null) {
+        if (dto.contrasena() != null && !dto.contrasena().isBlank()) {
+            // Se valida ANTES de tocar nada: si la contraseña actual está mal, no se cambia ningún dato
+            if (dto.contrasenaActual() == null
+                    || !passwordEncoder.matches(dto.contrasenaActual(), usuario.getContrasena())) {
+                throw new BadRequestException("La contraseña actual no es correcta");
+            }
             usuario.setContrasena(passwordEncoder.encode(dto.contrasena()));
         }
+        usuario.setNombre(dto.nombre().trim());
+        usuario.setApellido(dto.apellido().trim());
         return UsuarioResponseDTO.from(userRepository.save(usuario));
     }
 
