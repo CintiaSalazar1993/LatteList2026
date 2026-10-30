@@ -21,7 +21,7 @@ public record CafeRequestDTO(
         @NotBlank(message = "La dirección es obligatoria.")
         @Size(min = 3, max = 60, message = "La dirección debe contener entre 3 y 60 caracteres")
         @Pattern(
-                regexp = "^[\\p{L}][\\p{L}\\s.]*\\s\\d+$",
+                regexp = "^[\\p{L}\\d][\\p{L}\\d\\s.]*\\s\\d+$",
                 message = "La dirección debe tener el formato: Calle seguida de la altura numérica, por ejemplo 'Colón 3231'."
         )
         String direccion,
@@ -29,9 +29,11 @@ public record CafeRequestDTO(
         @NotNull(message = "El costo promedio es obligatorio")
         CostoPromedio costoPromedio,
 
+        /** Un link (http/https) o una imagen subida desde el front, en base64 (PNG, JPG o WEBP). */
+        @Size(max = 300000, message = "La imagen del logo es demasiado pesada")
         @Pattern(
-                regexp = "^(https?://).+\\.(png|jpg|jpeg|svg|webp)$",
-                message = "El logo debe ser una URL válida a una imagen (.png, .jpg, etc.)"
+                regexp = "^(https?://\\S+|data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+)$",
+                message = "El logo debe ser un link (http o https) o una imagen PNG, JPG o WEBP"
         )
         String logo,
 

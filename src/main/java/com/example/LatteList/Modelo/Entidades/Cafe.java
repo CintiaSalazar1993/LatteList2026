@@ -31,6 +31,10 @@ public class Cafe {
     @Column(nullable = false)
     private CostoPromedio costoPromedio;
 
+    // El logo puede ser un link (https://...) o la imagen misma en base64 (data:image/...),
+    // por eso necesita una columna grande. OJO: en una base ya creada hay que correr una vez
+    // ALTER TABLE cafes MODIFY logo MEDIUMTEXT;  (ddl-auto=update no cambia columnas existentes)
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String logo;
 
     private String instagramUrl;
