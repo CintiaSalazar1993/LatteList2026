@@ -33,15 +33,15 @@ INSERT INTO usuarios (nombre, apellido, email, contrasena, tipo_de_usuario, fech
  
 -- ---------- 2) Cafés reales de Mar del Plata ----------
 INSERT INTO cafes (nombre, direccion, costo_promedio, logo, instagram_url, duenio_id) VALUES
-('Kersen', 'Garay 1755, Mar del Plata', '$$$', NULL, 'https://instagram.com/kersencafe', (SELECT id FROM usuarios WHERE email = 'duenio1@lattelist.com')),
-('Dinette', 'Alvarado 1702, Mar del Plata', '$$$', NULL, 'https://instagram.com/muydinette', (SELECT id FROM usuarios WHERE email = 'duenio1@lattelist.com')),
-('Niño Lobo', 'Roca 1244, Mar del Plata', '$$', NULL, NULL, (SELECT id FROM usuarios WHERE email = 'duenio1@lattelist.com')),
-('ATC - Acá Tomamos Café', 'Rawson 2025, Mar del Plata', '$$', NULL, 'https://instagram.com/acatomamoscafe', (SELECT id FROM usuarios WHERE email = 'duenio1@lattelist.com')),
-('Café Planta Baja', 'Rawson 1457, Mar del Plata', '$$', NULL, 'https://instagram.com/cafeplantabaja', (SELECT id FROM usuarios WHERE email = 'duenio1@lattelist.com')),
-('No Coffee no Prana', '14 de Julio 2479, Mar del Plata', '$$', NULL, 'https://instagram.com/no_coffee__no__prana', (SELECT id FROM usuarios WHERE email = 'duenio2@lattelist.com')),
-('Crumble Bakery', 'San Juan 540, Mar del Plata', '$$', NULL, 'https://instagram.com/crumblebakerymdp', (SELECT id FROM usuarios WHERE email = 'duenio2@lattelist.com')),
-('Nina Pasticceria', 'Olavarría 2530, Mar del Plata', '$$', NULL, 'https://instagram.com/ninapasticceria', (SELECT id FROM usuarios WHERE email = 'duenio2@lattelist.com')),
-('Atilio''s', 'Alvarado 2924, Mar del Plata', '$$', NULL, 'https://instagram.com/atiliosatilios', (SELECT id FROM usuarios WHERE email = 'duenio2@lattelist.com'));
+('Kersen', 'Garay 1755', '$$$', NULL, 'https://instagram.com/kersencafe', (SELECT id FROM usuarios WHERE email = 'duenio1@lattelist.com')),
+('Dinette', 'Alvarado 1702', '$$$', NULL, 'https://instagram.com/muydinette', (SELECT id FROM usuarios WHERE email = 'duenio1@lattelist.com')),
+('Niño Lobo', 'Roca 1244', '$$', NULL, NULL, (SELECT id FROM usuarios WHERE email = 'duenio1@lattelist.com')),
+('ATC - Acá Tomamos Café', 'Rawson 2025', '$$', NULL, 'https://instagram.com/acatomamoscafe', (SELECT id FROM usuarios WHERE email = 'duenio1@lattelist.com')),
+('Café Planta Baja', 'Rawson 1457', '$$', NULL, 'https://instagram.com/cafeplantabaja', (SELECT id FROM usuarios WHERE email = 'duenio1@lattelist.com')),
+('No Coffee no Prana', '14 de Julio 2479', '$$', NULL, 'https://instagram.com/no_coffee__no__prana', (SELECT id FROM usuarios WHERE email = 'duenio2@lattelist.com')),
+('Crumble Bakery', 'San Juan 540', '$$', NULL, 'https://instagram.com/crumblebakerymdp', (SELECT id FROM usuarios WHERE email = 'duenio2@lattelist.com')),
+('Nina Pasticceria', 'Olavarría 2530', '$$', NULL, 'https://instagram.com/ninapasticceria', (SELECT id FROM usuarios WHERE email = 'duenio2@lattelist.com')),
+('Atilio''s', 'Alvarado 2924', '$$', NULL, 'https://instagram.com/atiliosatilios', (SELECT id FROM usuarios WHERE email = 'duenio2@lattelist.com'));
  
 -- ---------- 3) Etiquetas de cada café (tabla cafe_etiquetas) ----------
 INSERT INTO cafe_etiquetas (cafe_id, etiqueta) VALUES
@@ -169,4 +169,5 @@ UNION ALL SELECT 'lista_cafe', COUNT(*) FROM lista_cafe;
 SELECT c.nombre, c.direccion, ROUND(AVG(r.puntuacion_general),2) AS promedio, COUNT(r.id) AS resenas
 FROM cafes c LEFT JOIN resenas r ON r.cafe_id = c.id
 GROUP BY c.id, c.nombre, c.direccion ORDER BY promedio DESC;
- 
+
+
