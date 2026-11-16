@@ -12,6 +12,10 @@ public interface CafeRepository extends JpaRepository<Cafe, Long>, JpaSpecificat
 
     List<Cafe> findByDuenioIdOrderByNombreAsc(Long duenioId);
 
+    boolean existsByDireccionIgnoreCase(String direccion);
+
+    boolean existsByDireccionIgnoreCaseAndIdNot(String direccion, Long id);
+
     @Query("select c.costoPromedio, count(c) from Cafe c group by c.costoPromedio")
     List<Object[]> contarPorCosto();
 

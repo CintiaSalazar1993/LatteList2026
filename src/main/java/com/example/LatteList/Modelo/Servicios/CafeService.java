@@ -6,6 +6,7 @@ import com.example.LatteList.Modelo.Enum.CostoPromedio;
 import com.example.LatteList.Modelo.Enum.Etiquetas;
 import com.example.LatteList.Modelo.Enum.TipoDeUsuario;
 import com.example.LatteList.Modelo.Excepciones.BadRequestException;
+import com.example.LatteList.Modelo.Excepciones.ConflictException;
 import com.example.LatteList.Modelo.Excepciones.ForbiddenOperationException;
 import com.example.LatteList.Modelo.Excepciones.ResourceNotFoundException;
 import com.example.LatteList.Modelo.Repositorios.CafeRepository;
@@ -87,6 +88,8 @@ public class CafeService {
                     .orElseThrow(() -> new ResourceNotFoundException("No existe el usuario autenticado"));
         }
 
+        validarDireccionLibre(dto.direccion(), null);
+
         Cafe cafe = new Cafe();
         aplicar(dto, cafe);
         cafe.setDuenio(duenio);
@@ -100,6 +103,7 @@ public class CafeService {
         if (!cafe.getDuenio().getId().equals(actor.getId())) {
             throw new ForbiddenOperationException("Solo el dueño del café puede modificarlo");
         }
+        validarDireccionLibre(dto.direccion(), id);
         aplicar(dto, cafe);
         return aDTO(cafeRepository.save(cafe));
     }
@@ -150,6 +154,17 @@ public class CafeService {
     private Cafe buscar(Long id) {
         return cafeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el café con id " + id));
+    }
+
+    /** No puede haber dos cafés en la misma dirección (se ignoran las mayúsculas y los espacios de los extremos). */
+    private void validarDireccionLibre(String direccion, Long idActual) {
+        String limpia = direccion.trim();
+        boolean repetida = idActual == null
+                ? cafeRepository.existsByDireccionIgnoreCase(limpia)
+                : cafeRepository.existsByDireccionIgnoreCaseAndIdNot(limpia, idActual);
+        if (repetida) {
+            throw new ConflictException("Ya existe un café registrado en esa dirección");
+        }
     }
 
     private void aplicar(CafeRequestDTO dto, Cafe cafe) {
